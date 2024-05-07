@@ -1,9 +1,10 @@
 const { ApolloServer, gql } = require("apollo-server");
 
 const typeDefs = gql`
+  scalar Date
   type CyclingActivity {
     id: ID!
-    date: String!
+    date: Date!
     area: String!
     condition: Condition
   }
@@ -17,13 +18,39 @@ const typeDefs = gql`
     totalDays: Int!
     activity: [CyclingActivity!]!
   }
+
+  input AddActivityCycling {
+    date: Date!
+    area: String!
+    condition: Condition
+  }
+
+  type RemoveAcitivityDetail {
+    activty: CyclingActivity!
+    removed: Boolean
+    beforeCount: Int!
+    afterCount: Int!
+  }
+
+  type Mutation {
+    addActivty(input: AddActivityCycling!): CyclingActivity
+    removeActivity(id: ID!): RemoveAcitivityDetail!
+  }
 `;
 
 // const resolvers = {};
 
+const mocks = {
+  Date: () => {
+    const date = new Date();
+    // console.log(date.toLocaleString());
+    return date.toLocaleDateString();
+  },
+};
+
 const server = new ApolloServer({
   typeDefs,
-  mocks: true,
+  mocks,
   //   resolvers,
 });
 
