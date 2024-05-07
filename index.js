@@ -1,22 +1,31 @@
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer, gql, MockList } = require("apollo-server");
 
 const typeDefs = gql`
   scalar Date
+  """
+  The CyclingActivity contains the characteristics of a regular cycling day
+  """
   type CyclingActivity {
+    "Unique Id of the acitivty"
     id: ID!
+    "Date of the cycling activity"
     date: Date!
+    "Area the cycle ride was on"
     area: String!
+    "Condition of the cycling day either wet or dry or etc"
     condition: Condition
   }
+
   enum Condition {
     WET
     DRY
     RAIN
     HOT
   }
+
   type Query {
     totalDays: Int!
-    activity: [CyclingActivity!]!
+    allActivity: [CyclingActivity!]!
   }
 
   input AddActivityCycling {
@@ -36,6 +45,10 @@ const typeDefs = gql`
     addActivty(input: AddActivityCycling!): CyclingActivity
     removeActivity(id: ID!): RemoveAcitivityDetail!
   }
+
+  type Subscription {
+    activity: CyclingActivity!
+  }
 `;
 
 // const resolvers = {};
@@ -46,6 +59,10 @@ const mocks = {
     // console.log(date.toLocaleString());
     return date.toLocaleDateString();
   },
+  Query: () => ({
+    totalDays: () => new MockList(5),
+  }),
+  String: () => "Venkatesh Data",
 };
 
 const server = new ApolloServer({
